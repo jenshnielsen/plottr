@@ -5,7 +5,6 @@ with open("README.md", "r") as fh:
 
 setup(
     name='plottr',
-    version='0.1.0',
     description='A tool for live plotting and processing data',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -14,6 +13,8 @@ setup(
     url='https://github.com/toolsforexperiments/plottr',
     packages=find_packages(include=("plottr*",)),
     package_data={'plottr': ['resource/gfx/*']},
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     install_requires=[
         'pandas>=0.22',
         'xarray',
