@@ -142,7 +142,7 @@ class RunList(QtWidgets.QTreeWidget):
         self.itemSelectionChanged.connect(self.selectRun)
         self.itemActivated.connect(self.activateRun)
 
-    def addRun(self, runId: int, **vals: str) -> None:
+    def _generate_run_columns(self, runId: int, **vals: str):
         lst = [str(runId)]
         lst.append(vals.get('experiment', ''))
         lst.append(vals.get('sample', ''))
@@ -151,7 +151,10 @@ class RunList(QtWidgets.QTreeWidget):
         lst.append(vals.get('completed_date', '') + ' ' + vals.get('completed_time', ''))
         lst.append(str(vals.get('records', '')))
         lst.append(vals.get('guid', ''))
+        return lst
 
+    def addRun(self, runId: int, **vals: str) -> None:
+        lst = self._generate_run_columns(runId, **vals)
         item = SortableTreeWidgetItem(lst)
         self.addTopLevelItem(item)
 
@@ -165,6 +168,27 @@ class RunList(QtWidgets.QTreeWidget):
             self.addRun(runId, **record)
 
         self.setSortingEnabled(True)
+
+        for i in range(len(self.cols)):
+            self.resizeColumnToContents(i)
+
+    def updateRun(self, existing_run, runId, **vals: str) -> None:
+        lst = self._generate_run_columns(runId, **vals)
+        columns = existing_run.columnCount()
+        for column_num in range(columns):
+            existing_run.setText(column_num, lst[column_num])
+
+    def updateRuns(self, selection: Dict[int, Dict[str, str]]) -> None:
+
+        for runId, record in selection.items():
+            existing_runs = self.findItems(str(runId), QtCore.Qt.MatchExactly)
+            if len(existing_runs) == 0:
+                self.addRun(runId, **record)
+            elif len(existing_runs) == 1:
+                existing_run = existing_runs[0]
+                self.updateRun(existing_run, runId, **record)
+            else:
+                raise RuntimeError("todo")
 
         for i in range(len(self.cols)):
             self.resizeColumnToContents(i)
@@ -258,6 +282,7 @@ class QCodesDBInspector(QtWidgets.QMainWindow):
         # * -1: empty DS open.
         # * any value > 0: run ID from the most recent loading.
         self.latestRunId = None
+        self._selected_dates = ()
 
         self.setWindowTitle('Plottr | QCoDeS dataset inspectr')
 
@@ -459,12 +484,18 @@ class QCodesDBInspector(QtWidgets.QMainWindow):
     ### handling user selections
     @Slot(list)
     def setDateSelection(self, dates: Sequence[str]) -> None:
-        if len(dates) > 0:
+        new_dates = tuple(dates)
+        if self._selected_dates != new_dates:
             assert self.dbdf is not None
             selection = self.dbdf.loc[self.dbdf['started_date'].isin(dates)].sort_index(ascending=False)
             self.runList.setRuns(selection.to_dict(orient='index'))
+        elif len(dates) > 0:
+            assert self.dbdf is not None
+            selection = self.dbdf.loc[self.dbdf['started_date'].isin(dates)].sort_index(ascending=False)
+            self.runList.updateRuns(selection.to_dict(orient='index'))
         else:
             self.runList.clear()
+        self._selected_dates = new_dates
 
     @Slot(int)
     def setRunSelection(self, runId: int) -> None:
