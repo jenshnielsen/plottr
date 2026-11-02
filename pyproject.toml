@@ -93,14 +93,6 @@ show_error_codes = true
 # Qt6's Python enums.
 enable_error_code = ["ignore-without-code", "truthy-bool"]
 
-# This module is auto generated so types
-# are hard to fix
-[[tool.mypy.overrides]]
-module = [
-    "plottr.apps.ui.Monitr_UI",
-]
-ignore_errors = true
-
 [[tool.mypy.overrides]]
 module = [
     "h5py",

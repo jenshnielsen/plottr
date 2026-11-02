@@ -5,7 +5,7 @@ Script obtained from: https://doc-snapshots.qt.io/qtforpython-dev/examples/examp
 from typing import Any, List, Dict, Union, Optional
 from pathlib import Path
 
-from .. import API_NAME as __binding__, QtCore, QtWidgets
+from .. import QtCore, QtWidgets
 QAbstractItemModel = QtCore.QAbstractItemModel
 QModelIndex = QtCore.QModelIndex
 QObject = QtCore.QObject
@@ -185,12 +185,7 @@ class JsonModel(QAbstractItemModel):
             if index.column() == 1:
                 item = index.internalPointer()
                 item.value = str(value)
-
-                if __binding__ in ("PySide", "PyQt5"):
-                    self.dataChanged.emit(index, index)
-                else:
-                    self.dataChanged.emit(index, index, [Qt.ItemDataRole.EditRole])
-
+                self.dataChanged.emit(index, index, [Qt.ItemDataRole.EditRole])
                 return True
 
         return False
