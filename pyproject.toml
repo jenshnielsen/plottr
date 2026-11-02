@@ -28,7 +28,10 @@ dependencies = [
     "numpy>=1.26",
     "lmfit>=1.1",
     "h5py>=3.11",
-    "qtpy>=2.3",
+    # plottr only needs QtCore/QtGui/QtWidgets. With PySide6 < 6.10.1, signals
+    # of plottr's nodes are not delivered to their UIs (PySide warns about
+    # "Signals and slots ... not ordered correctly").
+    "PySide6-Essentials>=6.10.1",
     "xhistogram>=0.3.0",
     "versioningit>=2.2.1",
     "watchdog>=2.3",
@@ -48,12 +51,11 @@ Source = "https://github.com/toolsforexperiments/plottr/"
 Tracker = "https://github.com/toolsforexperiments/plottr/issues"
 
 [project.optional-dependencies]
-pyqt5 = ["PyQt5>=5.15.10"]
-pyqt6 = ["PyQt6>=6.7"]
-pyside2 = ["PySide2>=5.12"]
-# With PySide6 < 6.10.1, signals of plottr's nodes are not delivered to their
-# UIs (PySide warns about "Signals and slots ... not ordered correctly").
-pyside6 = ["PySide6>=6.10.1"]
+# PySide6 is a regular dependency now and PyQt6 is never installed by plottr
+# (it is only used if the host application already uses it). These empty
+# extras are kept so that existing install commands keep working.
+pyqt6 = []
+pyside6 = []
 qcodes = ["qcodes>=0.54.1"]
 
 [project.scripts]
@@ -110,6 +112,14 @@ module = [
     "unicodeit",
 ]
 ignore_missing_imports = true
+
+# plottr is type-checked against PySide6 only. If PyQt6 happens to be
+# installed, mypy would otherwise also parse its stubs (imported by
+# third-party packages), which mypy 2.4 cannot parse for PyQt6 6.12.
+[[tool.mypy.overrides]]
+module = ["PyQt6.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
 
 [tool.versioningit]
 default-version = "0.0"

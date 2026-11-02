@@ -8,36 +8,52 @@ import sys
 import signal
 
 
-# Logic here: for mypy to work, we need to import the Qt modules to have the correct types/stubs.
-# For type checking we use PySide6, at runtime we use qtpy for backend abstraction.
-PYSIDE6 = False
-PYQT6 = False
-if TYPE_CHECKING:
+def _select_qt_binding() -> str:
+    """Pick the Qt binding plottr uses at runtime.
+
+    plottr uses PySide6 (a dependency). It only uses PyQt6 when the host
+    process has already chosen it, either by importing it before plottr or
+    via ``QT_API=pyqt6``, so that plottr's widgets live in the same Qt as
+    the host's. pyqtgraph and matplotlib follow the binding that is already
+    imported, so they make the same choice.
+    """
+    for qt5 in ("PyQt5", "PySide2"):
+        if f"{qt5}.QtCore" in sys.modules:
+            raise ImportError(
+                f"plottr requires Qt6 (PySide6, or PyQt6 if your application "
+                f"uses it), but the Qt5 binding {qt5} is already imported. "
+                f"Qt5 is no longer supported. If {qt5} was loaded by IPython "
+                f"or matplotlib, set the environment variable QT_API=pyside6."
+            )
+    pyqt6_loaded = "PyQt6.QtCore" in sys.modules
+    pyside6_loaded = "PySide6.QtCore" in sys.modules
+    if pyqt6_loaded and not pyside6_loaded:
+        return "PyQt6"
+    if not pyside6_loaded and os.environ.get("QT_API", "").lower() == "pyqt6":
+        return "PyQt6"
+    return "PySide6"
+
+
+# mypy always takes the PySide6 branch: plottr is type-checked against
+# PySide6 only, and code must stick to the API both bindings share
+# (e.g. fully qualified enums). The PyQt6 branch is covered by CI tests.
+if TYPE_CHECKING or _select_qt_binding() == "PySide6":
     from PySide6 import QtCore, QtGui, QtWidgets
     Signal = QtCore.Signal
     Slot = QtCore.Slot
     SignalInstance = QtCore.SignalInstance
-    # In Qt6, QAction and QActionGroup moved from QtWidgets to QtGui
-    QAction = QtGui.QAction
-    QActionGroup = QtGui.QActionGroup
-    API_NAME = 'PySide6'
+    API_NAME = "PySide6"
 else:
-    import qtpy
-    from qtpy import QtCore, QtGui, QtWidgets, API_NAME
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    Signal = QtCore.pyqtSignal
+    Slot = QtCore.pyqtSlot
+    SignalInstance = QtCore.pyqtBoundSignal
+    API_NAME = "PyQt6"
 
-    Signal = QtCore.Signal
-    Slot = QtCore.Slot
-    SignalInstance = QtCore.SignalInstance
-    API_NAME = qtpy.API_NAME
-    PYSIDE6 = qtpy.PYSIDE6
-    PYQT6 = qtpy.PYQT6
-    # In Qt6, QAction and QActionGroup moved from QtWidgets to QtGui
-    if PYSIDE6 or PYQT6:
-        QAction = QtGui.QAction
-        QActionGroup = QtGui.QActionGroup
-    else:
-        QAction = QtWidgets.QAction
-        QActionGroup = QtWidgets.QActionGroup
+QAction = QtGui.QAction
+QActionGroup = QtGui.QActionGroup
+PYSIDE6 = API_NAME == "PySide6"
+PYQT6 = API_NAME == "PyQt6"
 
 from pyqtgraph.flowchart import Flowchart as pgFlowchart, Node as pgNode
 from pyqtgraph.util.garbage_collector import GarbageCollector

@@ -14,6 +14,14 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
+        qt-api: ["pyside6"]
+        include:
+          # plottr uses PyQt6 when the host application does; QT_API selects it.
+          - python-version: "3.14"
+            qt-api: "pyqt6"
+    env:
+      QT_API: ${{ matrix.qt-api }}
+      PYTEST_QT_API: ${{ matrix.qt-api }}
 
     steps:
     # Installs the system libraries Qt needs, starts Xvfb and exports DISPLAY.
@@ -27,6 +35,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - uses: ./.github/actions/install-dependencies-and-plottr
+    - name: Install PyQt6
+      if: matrix.qt-api == 'pyqt6'
+      run: pip install PyQt6
     - name: Run Mypy
       run: mypy plottr
     - name: Test with pytest

@@ -20,31 +20,20 @@ Plottr is installable from pypi with `pip install plottr`
 
 ### Qt bindings
 
-Plottr is a Qt application. At runtime it talks to Qt through
-[`qtpy`](https://github.com/spyder-ide/qtpy), so it works with any of the
-supported Qt bindings, but **you must install one yourself** -- none is pulled
-in automatically. Pick exactly one of:
+Plottr is a Qt 6 application built on
+[PySide6](https://doc.qt.io/qtforpython-6/), which `pip install plottr` installs
+automatically (as `PySide6-Essentials`). Qt 5 bindings (PyQt5, PySide2) are no
+longer supported.
 
-| Binding   | pip extra                  | Notes                              |
-|-----------|----------------------------|------------------------------------|
-| PySide6   | `pip install plottr[pyside6]` | **Recommended** (and what testing/type-checking use by default) |
-| PyQt5     | `pip install plottr[pyqt5]`   |                                    |
-| PyQt6     | `pip install plottr[pyqt6]`   |                                    |
-| PySide2   | `pip install plottr[pyside2]` | Older Qt5 binding                  |
+If you embed plottr in an application that already uses **PyQt6**, plottr
+uses PyQt6 as well, provided PyQt6 is imported before plottr. You can also
+select PyQt6 explicitly by setting the environment variable `QT_API=pyqt6`.
+plottr never installs PyQt6 itself. Mixing two Qt bindings in one process does
+not work, so if IPython or matplotlib picked a different binding than plottr,
+set `QT_API=pyside6` (or `pyqt6`) before starting.
 
-For example, the recommended install is:
-
-```
-pip install plottr[pyside6]
-```
-
-If you have **more than one** binding installed, select which one plottr (via
-`qtpy`) should use by setting the `QT_API` environment variable before starting,
-e.g. `QT_API=pyside6` (other valid values: `pyqt5`, `pyqt6`, `pyside2`).
-
-If you installed `pyqt` from `(Ana)Conda` you should **not** use any of the pip
-extras above; instead do `pip install plottr` (Qt comes from conda) or install
-plottr from conda-forge:
+In a conda environment, install plottr from conda-forge, which brings in the
+conda-forge `pyside6` package:
 
 ```
 conda config --add channels conda-forge
@@ -52,8 +41,7 @@ conda config --set channel_priority strict
 conda install plottr
 ```
 
-To install from source: clone the repo, and install using
-`pip install -e .[pyside6]` (or another binding extra of your choice).
+To install from source: clone the repo, and install using `pip install -e .`.
 
 ### Using plottr in your own Qt application
 
@@ -98,7 +86,7 @@ You might want to install freshly if you still use the old version.
 * the usual: numpy, mpl, ...
 * pandas >= 2.2.2
 * pyqtgraph >= 0.13.3
-* one Qt binding (PySide6 recommended; see [Installation](#installation))
+* PySide6 >= 6.10.1 (installed automatically; see [Installation](#installation))
 
 # Recent changes:
 
