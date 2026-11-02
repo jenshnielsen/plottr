@@ -104,22 +104,22 @@ class FittingGui(NodeWidget):
         # model function selection widget
         self.module_combo = self.addModuleComboBox()
         self.module_combo.currentTextChanged.connect(self.moduleUpdate)
-        self.module_combo.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                        QtWidgets.QSizePolicy.Fixed)
+        self.module_combo.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                        QtWidgets.QSizePolicy.Policy.Fixed)
         module_sel_grid.addWidget(self.module_combo, 0, 0)
         # refresh module button
         # refresh_button = QtWidgets.QPushButton(REFRESH_MODULE_ICON, "")
         refresh_button = QtWidgets.QPushButton("↻")
         refresh_button.clicked.connect(self.moduleRefreshClicked)
-        refresh_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-                                     QtWidgets.QSizePolicy.Fixed)
+        refresh_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                                     QtWidgets.QSizePolicy.Policy.Fixed)
         module_sel_grid.addWidget(refresh_button, 0, 1)
         # add module button
         # open_button = QtWidgets.QPushButton(OPEN_MODULE_ICON,"")
         open_button = QtWidgets.QPushButton("+")
         open_button.clicked.connect(self.add_user_module)
-        open_button.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
-                                  QtWidgets.QSizePolicy.Fixed)
+        open_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                                  QtWidgets.QSizePolicy.Policy.Fixed)
         module_sel_grid.addWidget(open_button, 0, 2)
         module_sel_widget.setLayout(module_sel_grid)
         self.my_layout.addWidget(module_sel_widget, 0, 0)
@@ -135,7 +135,7 @@ class FittingGui(NodeWidget):
         self.model_doc_box.setReadOnly(True)
 
         # splitter1
-        splitter1 = QtWidgets.QSplitter(QtCore.Qt.Vertical)
+        splitter1 = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
         splitter1.addWidget(self.model_list)
         splitter1.addWidget(self.model_doc_box)
 
@@ -144,12 +144,12 @@ class FittingGui(NodeWidget):
         self.param_table.setHorizontalHeaderLabels([
             'fix', 'initial guess', 'lower bound', 'upper bound'])
         self.param_table.horizontalHeader(). \
-            setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.param_table.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                        QtWidgets.QSizePolicy.Expanding)
+            setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        self.param_table.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                        QtWidgets.QSizePolicy.Policy.Expanding)
 
         # splitter2
-        splitter2 = QtWidgets.QSplitter(QtCore.Qt.Vertical)
+        splitter2 = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
         splitter2.addWidget(splitter1)
         splitter2.addWidget(self.param_table)
         self.my_layout.addWidget(splitter2, 1, 0)
@@ -449,7 +449,7 @@ class FittingGui(NodeWidget):
         if module_exist:
             model_cls_name = model.__qualname__
             find_mdls = self.model_list.findItems(model_cls_name,
-                                                  QtCore.Qt.MatchExactly)
+                                                  QtCore.Qt.MatchFlag.MatchExactly)
             if len(find_mdls) == 1:
                 self.model_list.setCurrentItem(find_mdls[0])
             else:

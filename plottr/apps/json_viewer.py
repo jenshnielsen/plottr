@@ -159,14 +159,14 @@ class JsonModel(QAbstractItemModel):
 
         item = index.internalPointer()
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             if index.column() == 0:
                 return item.key
 
             if index.column() == 1:
                 return item.value
 
-        elif role == Qt.EditRole:
+        elif role == Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 return item.value
 
@@ -181,7 +181,7 @@ class JsonModel(QAbstractItemModel):
             role (Qt.ItemDataRole)
 
         """
-        if role == Qt.EditRole:
+        if role == Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 item = index.internalPointer()
                 item.value = str(value)
@@ -189,7 +189,7 @@ class JsonModel(QAbstractItemModel):
                 if __binding__ in ("PySide", "PyQt5"):
                     self.dataChanged.emit(index, index)
                 else:
-                    self.dataChanged.emit(index, index, [Qt.EditRole])
+                    self.dataChanged.emit(index, index, [Qt.ItemDataRole.EditRole])
 
                 return True
 
@@ -203,10 +203,10 @@ class JsonModel(QAbstractItemModel):
         For the JsonModel, it returns only data for columns (orientation = Horizontal)
 
         """
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             return self._headers[section]
 
         return None
@@ -275,7 +275,7 @@ class JsonModel(QAbstractItemModel):
         flags = super(JsonModel, self).flags(index)
 
         if index.column() == 1:
-            return Qt.ItemIsEditable | flags
+            return Qt.ItemFlag.ItemIsEditable | flags
         else:
             return flags
 

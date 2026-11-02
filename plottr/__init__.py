@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from PySide6 import QtCore, QtGui, QtWidgets
     Signal = QtCore.Signal
     Slot = QtCore.Slot
+    SignalInstance = QtCore.SignalInstance
     # In Qt6, QAction and QActionGroup moved from QtWidgets to QtGui
     QAction = QtGui.QAction
     QActionGroup = QtGui.QActionGroup
@@ -26,6 +27,7 @@ else:
 
     Signal = QtCore.Signal
     Slot = QtCore.Slot
+    SignalInstance = QtCore.SignalInstance
     API_NAME = qtpy.API_NAME
     PYSIDE6 = qtpy.PYSIDE6
     PYQT6 = qtpy.PYQT6

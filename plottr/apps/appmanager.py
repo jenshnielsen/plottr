@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Dict, Union, Any, Callable, Tuple, Optional
 
 from traceback import print_exception
-from plottr import QtCore, QtWidgets, QtGui, Flowchart, Signal, Slot, log, qtsleep, plottrPath, PYSIDE6
+from plottr import QtCore, QtWidgets, QtGui, Flowchart, Signal, Slot, log, qtsleep, plottrPath
 from plottr.gui.widgets import PlotWindow
 
 
@@ -268,10 +268,7 @@ class ProcessMonitor(QtCore.QObject):
             processesCopy = self.processes.copy()
             for Id, p in processesCopy.items():
                 state = p.state()
-                if PYSIDE6 and state == QtCore.QProcess.ProcessState.NotRunning:
-                    del self.processes[Id]
-                    self.processTerminated.emit(Id)
-                elif not PYSIDE6 and state == QtCore.QProcess.NotRunning:
+                if state == QtCore.QProcess.ProcessState.NotRunning:
                     del self.processes[Id]
                     self.processTerminated.emit(Id)
                 else:

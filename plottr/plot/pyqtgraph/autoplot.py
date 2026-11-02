@@ -49,7 +49,7 @@ class FigureWidget(QtWidgets.QWidget):
         self._minPlotHeight: int = 75
 
         self.title = QtWidgets.QLabel(parent=self)
-        self.title.setAlignment(QtCore.Qt.AlignHCenter)
+        self.title.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
         self._gridWidget = QtWidgets.QWidget(parent=self)
         self._gridLayout = QtWidgets.QGridLayout(self._gridWidget)
@@ -337,7 +337,7 @@ class AutoPlot(ClipboardMessageMixin, PlotWidget):
 
         self._initClipboardMessage()
         self.statusLabel = QtWidgets.QLabel(self.CLIPBOARD_HINT_MESSAGE)
-        self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.statusLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.statusLabel.setStyleSheet("color: gray;")
 
         self.setLayout(layout)
@@ -464,7 +464,7 @@ class AutoPlot(ClipboardMessageMixin, PlotWidget):
             self.setStatusMessage('')
 
     def _onPlotClicked(self, subplot: PlotBase, event: Any) -> None:
-        if event.button() != QtCore.Qt.LeftButton:
+        if event.button() != QtCore.Qt.MouseButton.LeftButton:
             return
         vb = subplot.plot.getViewBox()
         local = vb.mapFromScene(event.scenePos())
@@ -634,9 +634,9 @@ class FigureConfigToolBar(QtWidgets.QToolBar):
                                        ComplexRepresentation.fromLabel(_a.text()))
         )
         complexButton = QtWidgets.QToolButton()
-        complexButton.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
+        complexButton.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly)
         complexButton.setText('Complex')
-        complexButton.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        complexButton.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
         complexButton.setMenu(complexOptions)
 
         #stylistic edit to ensure that complexButton is the second button, also to ensure that the updateComplexButton removes the correct button

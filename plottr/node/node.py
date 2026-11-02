@@ -356,7 +356,7 @@ class NodeWidget(QtWidgets.QWidget, Generic[EmbedWidgetType]):
     icon: Optional[QtGui.QIcon] = None
 
     #: preferred location of the widget when used as dock widget
-    preferredDockWidgetArea = QtCore.Qt.LeftDockWidgetArea
+    preferredDockWidgetArea = QtCore.Qt.DockWidgetArea.LeftDockWidgetArea
 
     #: signal (args: object)) to emit to notify the node of a (changed)
     #: user option.

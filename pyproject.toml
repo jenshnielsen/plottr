@@ -99,16 +99,6 @@ module = [
 ]
 ignore_errors = true
 
-# Qt enum access patterns differ between PyQt5/qtpy and PySide6 type stubs.
-# At runtime, qtpy provides compatibility, but mypy sees PySide6 nested enums.
-# We disable attr-defined errors for plottr modules to allow old-style enum access
-# (e.g., Qt.DisplayRole instead of Qt.ItemDataRole.DisplayRole) which works at runtime.
-[[tool.mypy.overrides]]
-module = [
-    "plottr.*",
-]
-disable_error_code = ["attr-defined"]
-
 [[tool.mypy.overrides]]
 module = [
     "h5py",

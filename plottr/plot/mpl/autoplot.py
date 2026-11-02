@@ -258,7 +258,7 @@ class AutoPlotToolBar(QtWidgets.QToolBar):
         self.cmapCombo = QtWidgets.QComboBox()
         self.cmapCombo.setToolTip("Select colormap for 2D plots")
         self.cmapCombo.setSizeAdjustPolicy(
-            QtWidgets.QComboBox.AdjustToContents)
+            QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
         self._populateColormaps()
         self.addWidget(self.cmapCombo)
 

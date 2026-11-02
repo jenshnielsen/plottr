@@ -91,9 +91,9 @@ def autoplot(inputData: Union[None, DataDictBase] = None,
 
     widgetOptions = {
         "Data selection": dict(visible=True,
-                               dockArea=QtCore.Qt.TopDockWidgetArea),
+                               dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
         "Dimension assignment": dict(visible=True,
-                                     dockArea=QtCore.Qt.TopDockWidgetArea),
+                                     dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
     }
 
     fc = makeFlowchartWithPlot(nodes)
@@ -254,10 +254,10 @@ class AutoPlotMainWindow(PlotWindow):
         banner = QtWidgets.QLabel(msg)
         banner.setWordWrap(True)
         banner.setTextInteractionFlags(
-            QtCore.Qt.TextSelectableByMouse
-            | QtCore.Qt.TextSelectableByKeyboard
+            QtCore.Qt.TextInteractionFlag.TextSelectableByMouse
+            | QtCore.Qt.TextInteractionFlag.TextSelectableByKeyboard
         )
-        banner.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
+        banner.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.IBeamCursor))
         banner.setStyleSheet(
             "background-color: #fff3cd; color: #856404;"
             "border: 1px solid #ffc107; border-radius: 4px;"
@@ -410,9 +410,9 @@ def autoplotQcodesDataset(log: bool = False,
 
     widgetOptions = {
         "Data selection": dict(visible=True,
-                               dockArea=QtCore.Qt.TopDockWidgetArea),
+                               dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
         "Dimension assignment": dict(visible=True,
-                                     dockArea=QtCore.Qt.TopDockWidgetArea),
+                                     dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
     }
 
     win = QCAutoPlotMainWindow(fc, pathAndId=pathAndId,
@@ -441,11 +441,11 @@ def autoplotDDH5(filepath: str = '',
 
     widgetOptions = {
         "Data selection": dict(visible=True,
-                               dockArea=QtCore.Qt.TopDockWidgetArea),
+                               dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
         "Histogram": dict(visible=False,
-                          dockArea=QtCore.Qt.TopDockWidgetArea),
+                          dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
         "Dimension assignment": dict(visible=True,
-                                     dockArea=QtCore.Qt.TopDockWidgetArea),
+                                     dockArea=QtCore.Qt.DockWidgetArea.TopDockWidgetArea),
     }
 
     win = AutoPlotMainWindow(fc, loaderName='Data loader',

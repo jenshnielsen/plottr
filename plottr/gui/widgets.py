@@ -6,7 +6,7 @@ Common GUI widgets that are re-used across plottr.
 from typing import Union, List, Tuple, Optional, Sequence, Dict, Any, Type, Generic, TypeVar
 
 from .tools import dictToTreeWidgetItems, dpiScalingFactor
-from plottr import QtGui, Flowchart, QtWidgets, Signal, Slot, PYSIDE6
+from plottr import QtGui, Flowchart, QtWidgets, Signal, Slot
 from plottr.node import Node, linearFlowchart
 from plottr.node.node import updateGuiQuietly, emitGuiUpdate
 from ..plot import PlotNode, PlotWidgetContainer, PlotWidget
@@ -247,7 +247,7 @@ class SnapshotWidget(QtWidgets.QTreeWidget):
 def setHExpanding(w: QtWidgets.QWidget) -> None:
     """Set the size policy of a widget such that is expands horizontally."""
     p = w.sizePolicy()
-    p.setHorizontalPolicy(QtWidgets.QSizePolicy.MinimumExpanding)
+    p.setHorizontalPolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding)
     p.setHorizontalStretch(1)
     w.setSizePolicy(p)
 
@@ -255,7 +255,7 @@ def setHExpanding(w: QtWidgets.QWidget) -> None:
 def setVExpanding(w: QtWidgets.QWidget) -> None:
     """Set the size policy of a widget such that is expands vertically."""
     p = w.sizePolicy()
-    p.setVerticalPolicy(QtWidgets.QSizePolicy.MinimumExpanding)
+    p.setVerticalPolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding)
     p.setVerticalStretch(1)
     w.setSizePolicy(p)
 
@@ -458,10 +458,7 @@ class MultiDimensionSelector(QtWidgets.QListWidget):
         self.node: Optional[Node] = None
         self.dimensionType = dimensionType
 
-        if PYSIDE6:
-            self.setSelectionMode(self.SelectionMode.MultiSelection)
-        else:
-            self.setSelectionMode(self.MultiSelection)
+        self.setSelectionMode(self.SelectionMode.MultiSelection)
         self.itemSelectionChanged.connect(self.emitSelection)
 
     def setDimensions(self, dimensions: List[str]) -> None:

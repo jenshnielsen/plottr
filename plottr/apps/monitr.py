@@ -24,7 +24,6 @@ from typing import (
     Generator,
     Tuple,
     Sequence,
-    cast,
 )
 from functools import partial
 from itertools import cycle
@@ -606,9 +605,9 @@ class FileModel(QtGui.QStandardItemModel):
                     self.tags_dict[tag] = 1
                     new_tag_item = QtGui.QStandardItem(tag)  # Item for the combox model
                     new_tag_item.setFlags(
-                        QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled
+                        QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled
                     )
-                    new_tag_item.setData(QtCore.Qt.Unchecked, QtCore.Qt.CheckStateRole)
+                    new_tag_item.setData(QtCore.Qt.CheckState.Unchecked, QtCore.Qt.ItemDataRole.CheckStateRole)
                     self.tags_model.setItem(self.tags_model.rowCount(), 0, new_tag_item)
 
         if item.star:
@@ -1068,8 +1067,8 @@ class FileModel(QtGui.QStandardItemModel):
 
         self.tags_dict[tag] = 1
         new_tag_item = QtGui.QStandardItem(tag)
-        new_tag_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-        new_tag_item.setData(QtCore.Qt.Unchecked, QtCore.Qt.CheckStateRole)
+        new_tag_item.setFlags(QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+        new_tag_item.setData(QtCore.Qt.CheckState.Unchecked, QtCore.Qt.ItemDataRole.CheckStateRole)
         self.tags_model.setItem(self.tags_model.rowCount(), 0, new_tag_item)
         self.new_tag.emit(tag)
 
@@ -1084,7 +1083,7 @@ class FileModel(QtGui.QStandardItemModel):
             self.tags_dict[tag] -= 1
             if self.tags_dict[tag] == 0:
                 self.tags_dict.pop(tag)
-                tag_item = self.tags_model.findItems(tag, QtCore.Qt.MatchExactly)
+                tag_item = self.tags_model.findItems(tag, QtCore.Qt.MatchFlag.MatchExactly)
                 if len(tag_item) > 0:
                     self.tags_model.removeRow(tag_item[0].row())
                     self.tag_deleted_signal.emit(tag)
@@ -1257,7 +1256,7 @@ class FileTreeView(QtWidgets.QTreeView):
         self.model_.item_files_updated.connect(self.on_adjust_column_width)
         # self.model_.model_refreshed.connect(self.set_all_tags)
 
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu_requested)
         self.context_menu.triggered.connect(self.on_context_action_triggered)
 
@@ -1951,8 +1950,9 @@ class FileExplorer(QtWidgets.QWidget):
 
         # Tree and model initialization
         self.proxy_model = proxy_model
-        self.model = proxy_model.sourceModel()
-        assert isinstance(self.model, FileModel)
+        source_model = proxy_model.sourceModel()
+        assert isinstance(source_model, FileModel)
+        self.model = source_model
         self.file_tree = FileTreeView(proxy_model=proxy_model, parent=self)
         self.file_tree.set_all_tags()
 
@@ -1971,7 +1971,7 @@ class FileExplorer(QtWidgets.QWidget):
         self.copy_button = QtWidgets.QPushButton("Copy ALL Paths")
         self.tag_filter_combobox = QtWidgets.QComboBox()
         self.tag_filter_combobox.setSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
         )
         self.tag_filter_combobox.setModel(self.model.tags_model)
         self.selected_tags: List[str] = []
@@ -2059,7 +2059,7 @@ class FileExplorer(QtWidgets.QWidget):
         self.filter_worker.moveToThread(self.filter_thread)
         run_fun = partial(
             self.filter_worker.run,
-            cast(FileModel, self.model),
+            self.model,
             self.star_button.isChecked(),
             self.trash_button.isChecked(),
             filter,
@@ -2272,7 +2272,7 @@ class DataTreeWidget(QtWidgets.QTreeWidget):
 
         self.plot_popup_action.triggered.connect(self.emit_plot_requested_signal)
 
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu_requested)
 
         self.set_data()
@@ -2438,7 +2438,7 @@ class TextViewWidget(QtWidgets.QTextEdit):
         self.path = path
 
         size_policy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
         )
         self.setSizePolicy(size_policy)
 
@@ -2731,7 +2731,7 @@ class ImageViewer(QtWidgets.QLabel):
         self.copy_action = QAction("copy")
         self.copy_action.triggered.connect(self.on_copy_action)
 
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.on_context_menu_requested)
         self.context_menu.addAction(self.copy_action)
 
@@ -2756,7 +2756,7 @@ class ImageViewer(QtWidgets.QLabel):
         events, stopping the loop. For attributes and return details see Qt official documentation.
         """
         self.event_record.append(a1)
-        if a1.type() == QtCore.QEvent.Resize:
+        if a1.type() == QtCore.QEvent.Type.Resize:
             # Checks if the infinite loop sequence has happen 100 times already
             if self.rep_counter >= 100:
                 self.event_record = []
@@ -2769,7 +2769,7 @@ class ImageViewer(QtWidgets.QLabel):
             scaled_pixmap = QtGui.QPixmap.fromImage(
                 self.image.copy(QtCore.QRect())
             ).scaled(
-                parent_size.width(), parent_size.height(), QtCore.Qt.KeepAspectRatio
+                parent_size.width(), parent_size.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio
             )
             # If a resizing event happen, only update the pixmap if the size of the pixmap changed.
             if self.old_pixmap.size() != scaled_pixmap.size():
@@ -2798,8 +2798,8 @@ class VerticalScrollArea(QtWidgets.QScrollArea):
         self.first_scroll = False
         self.scroll_height = 0
 
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWidgetResizable(True)
         # self.verticalScrollBar().actionTriggered.connect(self.on_action_triggered)
         self.verticalScrollBar().rangeChanged.connect(self.on_range_changed)
@@ -2863,7 +2863,7 @@ class TagLabel(QtWidgets.QWidget):
         self.setLayout(self.layout_)
 
         size_policy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
         )
         self.setSizePolicy(size_policy)
 
@@ -3025,7 +3025,7 @@ class IconLabel(QtWidgets.QLabel):
             The animation will retain its original size otherwise.
         """
         super().__init__(*args, **kwargs)
-        self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.setMovie(movie)
 
         if size is not None:
@@ -3247,7 +3247,7 @@ class Monitr(QtWidgets.QMainWindow):
         self.left_side_dummy_widget.setLayout(self.left_side_layout)
 
         left_side_dummy_size_policy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred
         )
         left_side_dummy_size_policy.setHorizontalStretch(1)
         left_side_dummy_size_policy.setVerticalStretch(0)
@@ -3612,7 +3612,7 @@ class Monitr(QtWidgets.QMainWindow):
         self.data_window.widget.plot_requested.connect(self.on_plot_data)
 
         size_policy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding
         )
         self.data_window.setSizePolicy(size_policy)
 

@@ -213,7 +213,7 @@ class DimensionAssignmentWidget(QtWidgets.QTreeWidget):
         curRole = self._currentRoles.get(dim, None)
         if curRole is None or curRole['role'] != role:
             self.choices[dim]['roleSelectionWidget'].setCurrentText(role)
-            item = self.findItems(dim, QtCore.Qt.MatchExactly, 0)[0]
+            item = self.findItems(dim, QtCore.Qt.MatchFlag.MatchExactly, 0)[0]
 
             if 'optionsWidget' in self.choices[dim]:
                 w = self.choices[dim]['optionsWidget']
@@ -256,7 +256,7 @@ class DimensionAssignmentWidget(QtWidgets.QTreeWidget):
     @Slot(str, str)
     def setDimInfo(self, dim: str, info: str = '') -> None:
         try:
-            item = self.findItems(dim, QtCore.Qt.MatchExactly, 0)[0]
+            item = self.findItems(dim, QtCore.Qt.MatchFlag.MatchExactly, 0)[0]
             item.setText(3, info)
         except IndexError:
             pass
@@ -293,7 +293,7 @@ class DimensionReductionAssignmentWidget(DimensionAssignmentWidget):
 
         # at this point, we've already populated the dropdown.
         # this is now for additional options
-        item = self.findItems(dim, QtCore.Qt.MatchExactly, 0)[0]
+        item = self.findItems(dim, QtCore.Qt.MatchFlag.MatchExactly, 0)[0]
 
         if role == ReductionMethod.elementSelection.value:
 
@@ -312,7 +312,7 @@ class DimensionReductionAssignmentWidget(DimensionAssignmentWidget):
                     # If this shape did not change, don't update the slider.
                     if oldShapes is not None:
                         if values != oldShapes[dim]:
-                            self.setNewSlider(dim, self.findItems(dim, QtCore.Qt.MatchExactly, 0)[0])
+                            self.setNewSlider(dim, self.findItems(dim, QtCore.Qt.MatchFlag.MatchExactly, 0)[0])
 
     def setNewSlider(self, dim: str, item: QtWidgets.QTreeWidgetItem) -> None:
         assert self._dataStructure is not None
@@ -341,13 +341,13 @@ class DimensionReductionAssignmentWidget(DimensionAssignmentWidget):
         self.updateSizes()
 
     def elementSelectionSlider(self, nvals: int, value: int = 0) -> QtWidgets.QSlider:
-        w = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        w = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         w.setMinimum(0)
         w.setMaximum(nvals - 1)
         w.setSingleStep(1)
         w.setPageStep(1)
         w.setTickInterval(max(1, nvals//10))
-        w.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        w.setTickPosition(QtWidgets.QSlider.TickPosition.TicksBelow)
         w.setValue(value)
         return w
 

@@ -103,15 +103,15 @@ class DateList(QtWidgets.QListWidget):
         super().__init__(parent)
 
         self.setAcceptDrops(True)
-        self.setDefaultDropAction(QtCore.Qt.CopyAction)
+        self.setDefaultDropAction(QtCore.Qt.DropAction.CopyAction)
 
-        self.setSelectionMode(QtWidgets.QListView.ExtendedSelection)
+        self.setSelectionMode(QtWidgets.QListView.SelectionMode.ExtendedSelection)
         self.itemSelectionChanged.connect(self.sendSelectedDates)
 
     @Slot(list)
     def updateDates(self, dates: Sequence[str]) -> None:
         for d in dates:
-            if len(self.findItems(d, QtCore.Qt.MatchExactly)) == 0:
+            if len(self.findItems(d, QtCore.Qt.MatchFlag.MatchExactly)) == 0:
                 self.insertItem(0, d)
 
         i = 0
@@ -126,7 +126,7 @@ class DateList(QtWidgets.QListWidget):
             if i >= self.count():
                 break
 
-        self.sortItems(QtCore.Qt.DescendingOrder)
+        self.sortItems(QtCore.Qt.SortOrder.DescendingOrder)
 
     @Slot()
     def sendSelectedDates(self) -> None:
@@ -195,15 +195,15 @@ class RunList(QtWidgets.QTreeWidget):
 
         # Overlay label for status messages
         self._overlayLabel = QtWidgets.QLabel(self.viewport())
-        self._overlayLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self._overlayLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self._overlayLabel.setWordWrap(True)
         self._overlayLabel.setStyleSheet(
             "color: gray; font-size: 13pt; padding: 40px;"
         )
-        self._overlayLabel.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        self._overlayLabel.setAttribute(QtCore.Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setOverlayText(_SELECT_DATE_HINT)
 
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.showContextMenu)
 
     def setOverlayText(self, text: str) -> None:
@@ -224,7 +224,7 @@ class RunList(QtWidgets.QTreeWidget):
 
         menu = QtWidgets.QMenu()
 
-        copy_icon = self.style().standardIcon(QtWidgets.QStyle.SP_DialogSaveButton)
+        copy_icon = self.style().standardIcon(QtWidgets.QStyle.StandardPixmap.SP_DialogSaveButton)
         copy_action = menu.addAction(copy_icon, "Copy")
 
         window = cast(QCodesDBInspector, self.window())
@@ -289,7 +289,7 @@ class RunList(QtWidgets.QTreeWidget):
 
         run_added = False
         for runId, record in selection.items():
-            item = self.findItems(str(runId), QtCore.Qt.MatchExactly)
+            item = self.findItems(str(runId), QtCore.Qt.MatchFlag.MatchExactly)
             if len(item) == 0:
                 self.setSortingEnabled(False)
                 self.addRun(runId, **record)
@@ -349,7 +349,7 @@ class RunInfo(QtWidgets.QTreeWidget):
 
         # Smooth pixel-based scrolling so tall rows (e.g., long tracebacks)
         # can be scrolled through without jumping to the next row.
-        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         self._snapshotItem: Optional[QtWidgets.QTreeWidgetItem] = None
         self._snapshotData: Optional[dict] = None
@@ -524,7 +524,7 @@ class QCodesDBInspector(QtWidgets.QMainWindow):
         self.runList = RunList()
         self.runInfo = RunInfo()
 
-        rightSplitter = QtWidgets.QSplitter(QtCore.Qt.Vertical)
+        rightSplitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
         rightSplitter.addWidget(self.runList)
         rightSplitter.addWidget(self.runInfo)
         rightSplitter.setSizes([400, 200])
